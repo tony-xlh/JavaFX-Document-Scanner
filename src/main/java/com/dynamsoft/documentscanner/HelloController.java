@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,7 +27,7 @@ public class HelloController {
     @FXML
     private ComboBox<String> scannersComboBox;
     @FXML
-    private ListView documentListView;
+    private ListView<DocumentImage> documentListView;
     @FXML
     private CheckBox showUICheckBox;
     @FXML
@@ -39,12 +40,13 @@ public class HelloController {
     private ComboBox pixelTypeComboBox;
     private List<Scanner> scanners = new ArrayList<Scanner>();
     private DynamsoftService service = new DynamsoftService("http://127.0.0.1:18622","t0068MgAAAEm8KzOlKD/AG56RuTf2RSTo4ajLgVpDBfQkmIJYY7yrDj3jbzQpRfQRzGnACr7S1F/7Da6REO20jmF3QR4VDXI=");
-    private Map<Object,byte[]> rawBytesOfImages = new HashMap<Object,byte[]>();
+
     public void initialize(){
         try {
             this.loadResolutions();
             this.loadPixelTypes();
             this.loadScanners();
+            documentListView.setCellFactory(lv -> new DocumentImageCell());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -118,10 +120,9 @@ public class HelloController {
         Image img = new Image(new ByteArrayInputStream(image));
         ImageView iv = new ImageView();
         iv.setPreserveRatio(true);
-        iv.setFitWidth(documentListView.getWidth());
         iv.setImage(img);
-        rawBytesOfImages.put(iv,image);
-        documentListView.getItems().add(iv);
+        DocumentImage di = new DocumentImage(iv,image);
+        documentListView.getItems().add(di);
     }
 
     @FXML
@@ -132,21 +133,18 @@ public class HelloController {
         if (fileToSave != null) {
             PDDocument document = new PDDocument();
             int index = 0;
-            for (Object iv: documentListView.getItems()) {
-                if (iv.getClass().toString().indexOf("ImageView") != -1){
-                    index = index + 1;
-
-                    ImageView imageView = (ImageView) iv;
-                    PDRectangle rect = new PDRectangle((float) imageView.getImage().getWidth(),(float) imageView.getImage().getHeight());
-                    System.out.println(rect);
-                    PDPage page = new PDPage(rect);
-                    document.addPage(page);
-                    PDPageContentStream contentStream = new PDPageContentStream(document, page);
-                    PDImageXObject image
-                            = PDImageXObject.createFromByteArray(document,rawBytesOfImages.get(imageView),String.valueOf(index));
-                    contentStream.drawImage(image, 0, 0);
-                    contentStream.close();
-                }
+            for (DocumentImage di: documentListView.getItems()) {
+                index = index + 1;
+                ImageView imageView = di.imageView;
+                PDRectangle rect = new PDRectangle((float) imageView.getImage().getWidth(),(float) imageView.getImage().getHeight());
+                System.out.println(rect);
+                PDPage page = new PDPage(rect);
+                document.addPage(page);
+                PDPageContentStream contentStream = new PDPageContentStream(document, page);
+                PDImageXObject image
+                        = PDImageXObject.createFromByteArray(document,di.image,String.valueOf(index));
+                contentStream.drawImage(image, 0, 0);
+                contentStream.close();
             }
             document.save(fileToSave.getAbsolutePath());
             document.close();
