@@ -50,10 +50,10 @@ public class DynamsoftService {
     }
 
     public String createScanJob(Scanner scanner) throws Exception {
-        return createScanJob(scanner,null);
+        return createScanJob(scanner,null,null);
     }
 
-    public String createScanJob(Scanner scanner,DeviceConfiguration config) throws Exception {
+    public String createScanJob(Scanner scanner,DeviceConfiguration config,Capabilities capabilities) throws Exception {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
@@ -62,6 +62,9 @@ public class DynamsoftService {
         body.put("device",scanner.device);
         if (config != null) {
             body.put("config",config);
+        }
+        if (capabilities != null) {
+            body.put("caps",capabilities);
         }
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(body);

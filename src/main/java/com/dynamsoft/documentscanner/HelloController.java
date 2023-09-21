@@ -26,11 +26,14 @@ public class HelloController {
     private CheckBox ADFCheckBox;
     @FXML
     private ComboBox resolutionComboBox;
+    @FXML
+    private ComboBox pixelTypeComboBox;
     private List<Scanner> scanners = new ArrayList<Scanner>();
     private DynamsoftService service = new DynamsoftService("http://127.0.0.1:18622","t0068MgAAAEm8KzOlKD/AG56RuTf2RSTo4ajLgVpDBfQkmIJYY7yrDj3jbzQpRfQRzGnACr7S1F/7Da6REO20jmF3QR4VDXI=");
     public void initialize(){
         try {
             this.loadResolutions();
+            this.loadPixelTypes();
             this.loadScanners();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -44,6 +47,15 @@ public class HelloController {
         resolutions.add(300);
         resolutionComboBox.setItems(FXCollections.observableList(resolutions));
         resolutionComboBox.getSelectionModel().select(1);
+    }
+
+    private void loadPixelTypes(){
+        List<String> pixelTypes = new ArrayList<String>();
+        pixelTypes.add("Black & White");
+        pixelTypes.add("Gray");
+        pixelTypes.add("Color");
+        pixelTypeComboBox.setItems(FXCollections.observableList(pixelTypes));
+        pixelTypeComboBox.getSelectionModel().select(0);
     }
 
     private void loadScanners() throws IOException, InterruptedException {
@@ -70,7 +82,14 @@ public class HelloController {
                 config.IfDuplexEnabled = duplexCheckBox.isSelected();
                 config.IfFeederEnabled = ADFCheckBox.isSelected();
                 config.Resolution = (int) resolutionComboBox.getSelectionModel().getSelectedItem();
-                String jobID = service.createScanJob(scanner,config);
+                Capabilities caps = new Capabilities();
+                caps.exception = "ignore";
+                caps.capabilities = new ArrayList<CapabilitySetup>();
+                CapabilitySetup pixelTypeSetup = new CapabilitySetup();
+                pixelTypeSetup.capability = 257;
+                pixelTypeSetup.curValue = pixelTypeComboBox.getSelectionModel().getSelectedIndex();
+                caps.capabilities.add(pixelTypeSetup);
+                String jobID = service.createScanJob(scanner,config,caps);
                 System.out.println("ID: "+jobID);
                 byte[] image = service.nextDocument(jobID);
                 while (image != null){
