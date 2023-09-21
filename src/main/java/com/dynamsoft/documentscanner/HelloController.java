@@ -50,14 +50,14 @@ public class HelloController {
                 @Override
                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                     for (DocumentImage item:documentListView.getItems()) {
-                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(10).doubleValue());
+                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(20).doubleValue());
                     }
                 }
             };
             documentListView.widthProperty().addListener(changeListener);
             documentListView.setCellFactory(param -> new ListCell<DocumentImage>() {
                 {
-                    prefWidthProperty().bind(documentListView.widthProperty().subtract(10));
+                    prefWidthProperty().bind(documentListView.widthProperty().subtract(20));
                     setMaxWidth(Control.USE_PREF_SIZE);
                 }
                 @Override
@@ -67,7 +67,7 @@ public class HelloController {
                     if (empty) {
                         setGraphic(null);
                     } else {
-                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(10).doubleValue());
+                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(20).doubleValue());
                         setGraphic(item.imageView);
                     }
                 }
