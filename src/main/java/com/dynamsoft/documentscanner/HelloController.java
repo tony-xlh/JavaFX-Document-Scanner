@@ -50,7 +50,11 @@ public class HelloController {
         }
         List<String> names = new ArrayList<String>();
         for (Scanner scanner:scanners) {
-            names.add(scanner.getName());
+            try {
+                names.add(scanner.getName() + " (" +DeviceType.getDisplayName(scanner.getType())+ ")");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
         scannersComboBox.setItems(FXCollections.observableList(names));
     }
