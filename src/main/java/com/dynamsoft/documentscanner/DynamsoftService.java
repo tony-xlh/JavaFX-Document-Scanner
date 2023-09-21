@@ -49,11 +49,11 @@ public class DynamsoftService {
         return scanners;
     }
 
-    public void createScanJob(Scanner scanner) throws IOException, InterruptedException {
-        createScanJob(scanner,null);
+    public String createScanJob(Scanner scanner) throws Exception {
+        return createScanJob(scanner,null);
     }
 
-    public void createScanJob(Scanner scanner,DeviceConfiguration config) throws IOException, InterruptedException {
+    public String createScanJob(Scanner scanner,DeviceConfiguration config) throws Exception {
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
@@ -65,13 +65,35 @@ public class DynamsoftService {
         }
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(body);
-        System.out.println(jsonBody);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endPoint+"/DWTAPI/ScanJobs"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response);
+        if (response.statusCode() == 201) {
+           return response.body();
+        }else{
+           throw new Exception(response.body());
+        }
+    }
+
+    public byte[] nextDocument(String jobID) throws Exception {
+        return getImage(jobID);
+    }
+
+    private byte[] getImage(String jobID) throws Exception {
+        HttpClient client = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endPoint+"/DWTAPI/ScanJobs/"+jobID+"/NextDocument"))
+                .GET()
+                .build();
+        HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+        if (response.statusCode() == 200) {
+            return response.body();
+        }
+        return null;
     }
 }
