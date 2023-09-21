@@ -26,7 +26,7 @@ public class HelloController {
         List<String> names = new ArrayList<String>();
         for (Scanner scanner:scanners) {
             try {
-                names.add(scanner.getName() + " (" +DeviceType.getDisplayName(scanner.getType())+ ")");
+                names.add(scanner.name + " (" +DeviceType.getDisplayName(scanner.type)+ ")");
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

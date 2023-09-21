@@ -9,16 +9,19 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DynamsoftService {
     private String endPoint = "http://127.0.0.1:18622";
+    private String license = "";
     public DynamsoftService(){
 
     }
-    public DynamsoftService(String endPoint){
+    public DynamsoftService(String endPoint, String license){
         this.endPoint = endPoint;
+        this.license = license;
     }
 
     public List<Scanner> getScanners() throws IOException, InterruptedException {
@@ -44,5 +47,31 @@ public class DynamsoftService {
             scanners.add(scanner);
         }
         return scanners;
+    }
+
+    public void createScanJob(Scanner scanner) throws IOException, InterruptedException {
+        createScanJob(scanner,null);
+    }
+
+    public void createScanJob(Scanner scanner,DeviceConfiguration config) throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .build();
+        Map<String,Object> body = new HashMap<String,Object>();
+        body.put("license",this.license);
+        body.put("device",scanner.device);
+        if (config != null) {
+            body.put("config",config);
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonBody = objectMapper.writeValueAsString(body);
+        System.out.println(jsonBody);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endPoint+"/DWTAPI/ScanJobs"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response);
     }
 }
