@@ -4,7 +4,7 @@ public class Scanner {
     private String name;
     private int type;
     private String device;
-    Scanner(String name, int type, String device){
+    public Scanner(String name, int type, String device){
         this.name = name;
         this.type = type;
         this.device = device;
@@ -20,5 +20,17 @@ public class Scanner {
 
     public String getName() {
         return name;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
