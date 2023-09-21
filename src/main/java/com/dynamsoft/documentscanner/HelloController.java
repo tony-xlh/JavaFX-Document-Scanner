@@ -1,13 +1,13 @@
 package com.dynamsoft.documentscanner;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -46,7 +46,32 @@ public class HelloController {
             this.loadResolutions();
             this.loadPixelTypes();
             this.loadScanners();
-            documentListView.setCellFactory(lv -> new DocumentImageCell());
+            ChangeListener<Number> changeListener = new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                    for (DocumentImage item:documentListView.getItems()) {
+                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(10).doubleValue());
+                    }
+                }
+            };
+            documentListView.widthProperty().addListener(changeListener);
+            documentListView.setCellFactory(param -> new ListCell<DocumentImage>() {
+                {
+                    prefWidthProperty().bind(documentListView.widthProperty().subtract(10));
+                    setMaxWidth(Control.USE_PREF_SIZE);
+                }
+                @Override
+                protected void updateItem(DocumentImage item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(10).doubleValue());
+                        setGraphic(item.imageView);
+                    }
+                }
+            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
