@@ -2,6 +2,7 @@ package com.dynamsoft.documentscanner;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
@@ -17,14 +18,32 @@ public class HelloController {
     private ComboBox<String> scannersComboBox;
     @FXML
     private ListView documentListView;
+    @FXML
+    private CheckBox showUICheckBox;
+    @FXML
+    private CheckBox duplexCheckBox;
+    @FXML
+    private CheckBox ADFCheckBox;
+    @FXML
+    private ComboBox resolutionComboBox;
     private List<Scanner> scanners = new ArrayList<Scanner>();
     private DynamsoftService service = new DynamsoftService("http://127.0.0.1:18622","t0068MgAAAEm8KzOlKD/AG56RuTf2RSTo4ajLgVpDBfQkmIJYY7yrDj3jbzQpRfQRzGnACr7S1F/7Da6REO20jmF3QR4VDXI=");
     public void initialize(){
         try {
+            this.loadResolutions();
             this.loadScanners();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void loadResolutions(){
+        List<Integer> resolutions = new ArrayList<Integer>();
+        resolutions.add(100);
+        resolutions.add(200);
+        resolutions.add(300);
+        resolutionComboBox.setItems(FXCollections.observableList(resolutions));
+        resolutionComboBox.getSelectionModel().select(1);
     }
 
     private void loadScanners() throws IOException, InterruptedException {
@@ -47,7 +66,10 @@ public class HelloController {
             Scanner scanner  = scanners.get(selectedIndex);
             try {
                 DeviceConfiguration config = new DeviceConfiguration();
-                config.IfShowUI = true;
+                config.IfShowUI = showUICheckBox.isSelected();
+                config.IfDuplexEnabled = duplexCheckBox.isSelected();
+                config.IfFeederEnabled = ADFCheckBox.isSelected();
+                config.Resolution = (int) resolutionComboBox.getSelectionModel().getSelectedItem();
                 String jobID = service.createScanJob(scanner,config);
                 System.out.println("ID: "+jobID);
                 byte[] image = service.nextDocument(jobID);
