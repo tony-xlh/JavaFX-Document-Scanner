@@ -4,6 +4,7 @@ module com.dynamsoft.documentscanner {
     requires java.net.http;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
+    requires org.apache.pdfbox;
 
 
     opens com.dynamsoft.documentscanner to javafx.fxml;

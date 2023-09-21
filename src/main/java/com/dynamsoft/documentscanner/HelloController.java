@@ -7,11 +7,20 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HelloController {
     @FXML
@@ -30,6 +39,7 @@ public class HelloController {
     private ComboBox pixelTypeComboBox;
     private List<Scanner> scanners = new ArrayList<Scanner>();
     private DynamsoftService service = new DynamsoftService("http://127.0.0.1:18622","t0068MgAAAEm8KzOlKD/AG56RuTf2RSTo4ajLgVpDBfQkmIJYY7yrDj3jbzQpRfQRzGnACr7S1F/7Da6REO20jmF3QR4VDXI=");
+    private Map<Object,byte[]> rawBytesOfImages = new HashMap<Object,byte[]>();
     public void initialize(){
         try {
             this.loadResolutions();
@@ -110,7 +120,37 @@ public class HelloController {
         iv.setPreserveRatio(true);
         iv.setFitWidth(documentListView.getWidth());
         iv.setImage(img);
+        rawBytesOfImages.put(iv,image);
         documentListView.getItems().add(iv);
+    }
+
+    @FXML
+    protected void onSaveButtonClicked() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Resource File");
+        File fileToSave = fileChooser.showSaveDialog(null);
+        if (fileToSave != null) {
+            PDDocument document = new PDDocument();
+            int index = 0;
+            for (Object iv: documentListView.getItems()) {
+                if (iv.getClass().toString().indexOf("ImageView") != -1){
+                    index = index + 1;
+
+                    ImageView imageView = (ImageView) iv;
+                    PDRectangle rect = new PDRectangle((float) imageView.getImage().getWidth(),(float) imageView.getImage().getHeight());
+                    System.out.println(rect);
+                    PDPage page = new PDPage(rect);
+                    document.addPage(page);
+                    PDPageContentStream contentStream = new PDPageContentStream(document, page);
+                    PDImageXObject image
+                            = PDImageXObject.createFromByteArray(document,rawBytesOfImages.get(imageView),String.valueOf(index));
+                    contentStream.drawImage(image, 0, 0);
+                    contentStream.close();
+                }
+            }
+            document.save(fileToSave.getAbsolutePath());
+            document.close();
+        }
     }
 
 }
