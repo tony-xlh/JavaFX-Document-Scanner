@@ -118,6 +118,9 @@ public class HelloController {
             }
         }
         scannersComboBox.setItems(FXCollections.observableList(names));
+        if (names.size()>0) {
+            scannersComboBox.getSelectionModel().select(0);
+        }
     }
 
     @FXML
