@@ -55,6 +55,18 @@ public class HelloController {
                 }
             };
             documentListView.widthProperty().addListener(changeListener);
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem deleteMenuItem = new MenuItem("Delete selected");
+            deleteMenuItem.setOnAction(e -> {
+                var indices = documentListView.getSelectionModel().getSelectedIndices();
+                for (int i = indices.size() - 1; i >= 0; i--) {
+                    int index = indices.get(i);
+                    documentListView.getItems().remove(index);
+                }
+            });
+            contextMenu.getItems().add(deleteMenuItem);
+            // setContextMenu to label
+            documentListView.setContextMenu(contextMenu);
             documentListView.setCellFactory(param -> new ListCell<DocumentImage>() {
                 {
                     prefWidthProperty().bind(documentListView.widthProperty().subtract(20));
