@@ -50,7 +50,7 @@ public class HelloController {
                 @Override
                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                     for (DocumentImage item:documentListView.getItems()) {
-                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(20).doubleValue());
+                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(30).doubleValue());
                     }
                 }
             };
@@ -67,9 +67,10 @@ public class HelloController {
             contextMenu.getItems().add(deleteMenuItem);
             // setContextMenu to label
             documentListView.setContextMenu(contextMenu);
+            documentListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             documentListView.setCellFactory(param -> new ListCell<DocumentImage>() {
                 {
-                    prefWidthProperty().bind(documentListView.widthProperty().subtract(20));
+                    prefWidthProperty().bind(documentListView.widthProperty().subtract(30));
                     setMaxWidth(Control.USE_PREF_SIZE);
                 }
                 @Override
@@ -79,7 +80,7 @@ public class HelloController {
                     if (empty) {
                         setGraphic(null);
                     } else {
-                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(20).doubleValue());
+                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(30).doubleValue());
                         setGraphic(item.imageView);
                     }
                 }
