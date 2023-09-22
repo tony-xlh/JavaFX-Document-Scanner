@@ -1,14 +1,18 @@
 package com.dynamsoft.documentscanner;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -24,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 public class HelloController {
+    private  Stage progressStage;
     @FXML
     private ComboBox<String> scannersComboBox;
     @FXML
@@ -43,6 +48,7 @@ public class HelloController {
 
     public void initialize(){
         try {
+            this.createProgressStage();
             this.loadResolutions();
             this.loadPixelTypes();
             this.loadScanners();
@@ -128,30 +134,37 @@ public class HelloController {
     protected void onScanButtonClicked() {
         int selectedIndex = scannersComboBox.getSelectionModel().getSelectedIndex();
         if (selectedIndex != -1) {
-            Scanner scanner  = scanners.get(selectedIndex);
-            try {
-                DeviceConfiguration config = new DeviceConfiguration();
-                config.IfShowUI = showUICheckBox.isSelected();
-                config.IfDuplexEnabled = duplexCheckBox.isSelected();
-                config.IfFeederEnabled = ADFCheckBox.isSelected();
-                config.Resolution = (int) resolutionComboBox.getSelectionModel().getSelectedItem();
-                Capabilities caps = new Capabilities();
-                caps.exception = "ignore";
-                caps.capabilities = new ArrayList<CapabilitySetup>();
-                CapabilitySetup pixelTypeSetup = new CapabilitySetup();
-                pixelTypeSetup.capability = 257;
-                pixelTypeSetup.curValue = pixelTypeComboBox.getSelectionModel().getSelectedIndex();
-                caps.capabilities.add(pixelTypeSetup);
-                String jobID = service.createScanJob(scanner,config,caps);
-                System.out.println("ID: "+jobID);
-                byte[] image = service.nextDocument(jobID);
-                while (image != null){
-                    loadImage(image);
-                    image = service.nextDocument(jobID);
+            progressStage.show();
+            Thread t = new Thread(() -> {
+                Scanner scanner  = scanners.get(selectedIndex);
+                try {
+                    DeviceConfiguration config = new DeviceConfiguration();
+                    config.IfShowUI = showUICheckBox.isSelected();
+                    config.IfDuplexEnabled = duplexCheckBox.isSelected();
+                    config.IfFeederEnabled = ADFCheckBox.isSelected();
+                    config.Resolution = (int) resolutionComboBox.getSelectionModel().getSelectedItem();
+                    Capabilities caps = new Capabilities();
+                    caps.exception = "ignore";
+                    caps.capabilities = new ArrayList<CapabilitySetup>();
+                    CapabilitySetup pixelTypeSetup = new CapabilitySetup();
+                    pixelTypeSetup.capability = 257;
+                    pixelTypeSetup.curValue = pixelTypeComboBox.getSelectionModel().getSelectedIndex();
+                    caps.capabilities.add(pixelTypeSetup);
+                    String jobID = service.createScanJob(scanner,config,caps);
+                    System.out.println("ID: "+jobID);
+                    byte[] image = service.nextDocument(jobID);
+                    while (image != null){
+                        loadImage(image);
+                        image = service.nextDocument(jobID);
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+                Platform.runLater(() -> {
+                    progressStage.close();
+                });
+            });
+            t.start();
         }
     }
 
@@ -192,4 +205,12 @@ public class HelloController {
         }
     }
 
+    public void createProgressStage() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloController.class.getResource("progress.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage progressStage = new Stage();
+        progressStage.setTitle("Document Scanner");
+        progressStage.setScene(scene);
+        this.progressStage = progressStage;
+    }
 }
