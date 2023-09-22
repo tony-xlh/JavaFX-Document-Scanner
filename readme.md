@@ -2,7 +2,10 @@
 
 Starting from Dynamic Web TWAIN v18.4, Dynamsoft Service will be accessible via REST APIs so that we can use different programming languages to create document scanning applications.
 
-In this article, we are going to talk about how to access document scanners using the REST APIs in Java. A desktop app is built using JavaFX.
+This repo demonstrates how to access document scanners using the REST APIs in Java. A desktop app is built using JavaFX.
+
+![screenshot](https://github.com/tony-xlh/JavaFX-Document-Scanner/assets/5462205/39332bce-bc21-44a1-9190-163207d4f71b)
+
 
 Some advantages of using the REST APIs of Dynamsoft Service for document scanning in Java:
 
