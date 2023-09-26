@@ -4,18 +4,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.*;
+
 public class DynamsoftService {
     private String endPoint = "http://127.0.0.1:18622";
     private String license = "";
+    private static final MediaType JSON
+            = MediaType.get("application/json; charset=utf-8");
     public DynamsoftService(){
 
     }
@@ -24,29 +24,26 @@ public class DynamsoftService {
         this.license = license;
     }
 
-    public List<Scanner> getScanners() throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
+    public List<Scanner> getScanners() throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(endPoint+"/DWTAPI/Scanners")
                 .build();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endPoint+"/DWTAPI/Scanners"))
-                .GET()
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        try (Response response = client.newCall(request).execute()) {
+            String body = response.body().string();
+            List<Scanner> scanners = new ArrayList<Scanner>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String,Object>> parsed = objectMapper.readValue(body,new TypeReference<List<Map<String,Object>>>() {});
 
-        String body = response.body();
-        System.out.println(body);
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<Map<String,Object>> parsed = objectMapper.readValue(body,new TypeReference<List<Map<String,Object>>>() {});
-        List<Scanner> scanners = new ArrayList<Scanner>();
-        for (Map<String,Object> item:parsed) {
-            int type = (int) item.get("type");
-            String name = (String) item.get("name");
-            String device = (String) item.get("device");
-            Scanner scanner = new Scanner(name,type,device);
-            scanners.add(scanner);
+            for (Map<String,Object> item:parsed) {
+                int type = (int) item.get("type");
+                String name = (String) item.get("name");
+                String device = (String) item.get("device");
+                Scanner scanner = new Scanner(name,type,device);
+                scanners.add(scanner);
+            }
+            return scanners;
         }
-        return scanners;
     }
 
     public String createScanJob(Scanner scanner) throws Exception {
@@ -54,9 +51,6 @@ public class DynamsoftService {
     }
 
     public String createScanJob(Scanner scanner,DeviceConfiguration config,Capabilities capabilities) throws Exception {
-        HttpClient client = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .build();
         Map<String,Object> body = new HashMap<String,Object>();
         body.put("license",this.license);
         body.put("device",scanner.device);
@@ -68,16 +62,19 @@ public class DynamsoftService {
         }
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(body);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endPoint+"/DWTAPI/ScanJobs"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = RequestBody.create(jsonBody, JSON);
+        Request request = new Request.Builder()
+                .url(endPoint+"/DWTAPI/ScanJobs")
+                .post(requestBody)
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() == 201) {
-           return response.body();
-        }else{
-           throw new Exception(response.body());
+        try (Response response = client.newCall(request).execute()) {
+            if (response.code() == 201) {
+                return response.body().string();
+            }else{
+                throw new Exception(response.body().string());
+            }
         }
     }
 
@@ -86,17 +83,18 @@ public class DynamsoftService {
     }
 
     private byte[] getImage(String jobID) throws Exception {
-        HttpClient client = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(endPoint+"/DWTAPI/ScanJobs/"+jobID+"/NextDocument")
                 .build();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endPoint+"/DWTAPI/ScanJobs/"+jobID+"/NextDocument"))
-                .GET()
-                .build();
-        HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
-        if (response.statusCode() == 200) {
-            return response.body();
+        String body = "";
+        try (Response response = client.newCall(request).execute()) {
+            if (response.code() == 200) {
+                return response.body().bytes();
+            }else{
+                return null;
+            }
+
         }
-        return null;
     }
 }
