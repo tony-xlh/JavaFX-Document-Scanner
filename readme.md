@@ -15,7 +15,7 @@ Some advantages of using the REST APIs of Dynamsoft Service for document scannin
 
 ## Prerequisites
 
-* You need to install Dynamsoft Service on your device. You can download the preview version for Windows [here](https://www.dynamsoft.com/codepool/downloads/DynamsoftServiceSetup.msi).
+* You need to install Dynamsoft Service on your device. You can find the download links [here](https://www.dynamsoft.com/codepool/java-twain-document-scanning.html#prerequisites).
 * A license for Dynamic Web TWAIN is needed. You can apply for a license [here](https://www.dynamsoft.com/customer/license/trialLicense?product=dwt).
 
 ## The Java Library
