@@ -20,4 +20,4 @@ Some advantages of using the REST APIs of Dynamsoft Service for document scannin
 
 ## The Java Library
 
-A Java library is made to wrap the REST API. You can include it in your library via JitPack: <https://jitpack.io/#tony-xlh/docscan4j>
+A Java library is made to wrap the REST API. You can include it in your project via JitPack: <https://jitpack.io/#tony-xlh/docscan4j>
