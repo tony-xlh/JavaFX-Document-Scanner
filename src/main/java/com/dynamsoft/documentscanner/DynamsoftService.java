@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.*;
 
@@ -63,10 +64,12 @@ public class DynamsoftService {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(body);
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .build();
         RequestBody requestBody = RequestBody.create(jsonBody, JSON);
         Request request = new Request.Builder()
-                .url(endPoint+"/DWTAPI/ScanJobs")
+                .url(endPoint+"/DWTAPI/ScanJobs?timeout=120")
                 .post(requestBody)
                 .build();
         try (Response response = client.newCall(request).execute()) {
@@ -83,7 +86,9 @@ public class DynamsoftService {
     }
 
     private byte[] getImage(String jobID) throws Exception {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .build();
         Request request = new Request.Builder()
                 .url(endPoint+"/DWTAPI/ScanJobs/"+jobID+"/NextDocument")
                 .build();

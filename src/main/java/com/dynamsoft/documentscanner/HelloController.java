@@ -44,7 +44,7 @@ public class HelloController {
     @FXML
     private ComboBox pixelTypeComboBox;
     private List<Scanner> scanners = new ArrayList<Scanner>();
-    private DynamsoftService service = new DynamsoftService("http://127.0.0.1:18622","t0068MgAAAEm8KzOlKD/AG56RuTf2RSTo4ajLgVpDBfQkmIJYY7yrDj3jbzQpRfQRzGnACr7S1F/7Da6REO20jmF3QR4VDXI=");
+    private DynamsoftService service = new DynamsoftService("http://127.0.0.1:18622","t0196AgYAAH/7QuzQ2CD1wePsMCyJ6oW9cqxIWEHI6RTsfyoq3AHu51JUuoA8HNRlNuvVW/2vymoGefGWO8pI062vWsMQBpVgHlo9q8eZVsporYjWUETLMlq5qgXe4+1r+v46Tv3PkQx8RsCWDbIA9MBUzgb41nN5jACJAAsAi2pgBByuIvVffQMF28j4t0H/ceqUAk673+mTco+TBZxyyZkC0qRQDGm1/QTQ75wVIBFghwDnn9ouINgCEgG2A0BVqDY/vYQ7Og==");
 
     public void initialize(){
         try {
@@ -101,6 +101,7 @@ public class HelloController {
         resolutions.add(100);
         resolutions.add(200);
         resolutions.add(300);
+        resolutions.add(600);
         resolutionComboBox.setItems(FXCollections.observableList(resolutions));
         resolutionComboBox.getSelectionModel().select(1);
     }
