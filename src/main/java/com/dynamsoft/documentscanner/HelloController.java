@@ -13,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -42,11 +41,15 @@ public class HelloController {
     @FXML
     private CheckBox searchablePDFCheckBox;
     @FXML
+    private TextField licenseKeyTextField;
+    @FXML
+    private TextField OCRSpaceKeyTextField;
+    @FXML
     private ComboBox resolutionComboBox;
     @FXML
     private ComboBox pixelTypeComboBox;
     private List<Scanner> scanners = new ArrayList<Scanner>();
-    private DynamsoftService service = new DynamsoftService("http://127.0.0.1:18622","t0196AgYAAH/7QuzQ2CD1wePsMCyJ6oW9cqxIWEHI6RTsfyoq3AHu51JUuoA8HNRlNuvVW/2vymoGefGWO8pI062vWsMQBpVgHlo9q8eZVsporYjWUETLMlq5qgXe4+1r+v46Tv3PkQx8RsCWDbIA9MBUzgb41nN5jACJAAsAi2pgBByuIvVffQMF28j4t0H/ceqUAk673+mTco+TBZxyyZkC0qRQDGm1/QTQ75wVIBFghwDnn9ouINgCEgG2A0BVqDY/vYQ7Og==");
+    private DynamsoftService service = new DynamsoftService("http://127.0.0.1:18622","");
 
     public void initialize(){
         try {
@@ -137,6 +140,7 @@ public class HelloController {
     protected void onScanButtonClicked() {
         int selectedIndex = scannersComboBox.getSelectionModel().getSelectedIndex();
         if (selectedIndex != -1) {
+            service.license = licenseKeyTextField.getText();
             progressStage.show();
             Thread t = new Thread(() -> {
                 Scanner scanner  = scanners.get(selectedIndex);
@@ -184,7 +188,7 @@ public class HelloController {
 
     @FXML
     protected void onSaveButtonClicked() throws IOException {
-        OCRSpace.key = "";
+        OCRSpace.key = OCRSpaceKeyTextField.getText();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         File fileToSave = fileChooser.showSaveDialog(null);

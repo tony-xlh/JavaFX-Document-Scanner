@@ -5,9 +5,10 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="371.0" prefWidth="544.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dynamsoft.documentscanner.HelloController">
+<AnchorPane prefHeight="476.0" prefWidth="551.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dynamsoft.documentscanner.HelloController">
   <children>
      <ComboBox fx:id="scannersComboBox" layoutX="12.0" layoutY="36.0" prefHeight="29.0" prefWidth="126.0" />
      <Label layoutX="12.0" layoutY="11.0" text="Scanners:" />
@@ -22,5 +23,9 @@
       <ComboBox fx:id="pixelTypeComboBox" layoutX="14.0" layoutY="255.0" prefHeight="25.0" prefWidth="126.0" />
       <Button fx:id="saveButton" layoutX="14.0" layoutY="296.0" mnemonicParsing="false" onMouseClicked="#onSaveButtonClicked" prefHeight="25.0" prefWidth="126.0" text="Save as PDF" />
       <CheckBox fx:id="searchablePDFCheckBox" layoutX="15.0" layoutY="329.0" mnemonicParsing="false" text="Searchable PDF" />
+      <TextField fx:id="licenseKeyTextField" layoutX="15.0" layoutY="377.0" prefHeight="25.0" prefWidth="126.0" />
+      <Label layoutX="14.0" layoutY="354.0" prefHeight="17.0" prefWidth="126.0" text="License key:" />
+      <TextField fx:id="OCRSpaceKeyTextField" layoutX="16.0" layoutY="425.0" prefHeight="25.0" prefWidth="126.0" />
+      <Label layoutX="15.0" layoutY="402.0" prefHeight="17.0" prefWidth="126.0" text="OCR key:" />
   </children>
 </AnchorPane>
