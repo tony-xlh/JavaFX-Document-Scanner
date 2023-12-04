@@ -90,7 +90,7 @@ public class DynamsoftService {
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .build();
         Request request = new Request.Builder()
-                .url(endPoint+"/DWTAPI/ScanJobs/"+jobID+"/NextDocument")
+                .url(endPoint+"/DWTAPI/ScanJobs/"+jobID+"/NextDocument?timeout=120")
                 .build();
         String body = "";
         try (Response response = client.newCall(request).execute()) {
