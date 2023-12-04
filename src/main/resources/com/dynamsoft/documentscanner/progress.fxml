@@ -7,7 +7,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="117.0" prefWidth="370.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dynamsoft.documentscanner.ProgressController">
    <children>
-      <Label alignment="CENTER" layoutX="34.0" layoutY="45.0" prefHeight="17.0" prefWidth="303.0" text="Scanning...">
+      <Label alignment="CENTER" layoutX="34.0" layoutY="45.0" prefHeight="17.0" prefWidth="303.0" text="Processing...">
          <font>
             <Font size="18.0" />
          </font>
