@@ -1,5 +1,7 @@
 package com.dynamsoft.documentscanner;
 
+import com.tonyxlh.searchablePDF4j.OCRResult;
+import com.tonyxlh.searchablePDF4j.OCRSpace;
 import com.tonyxlh.searchablePDF4j.SearchablePDFCreator;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -23,10 +25,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HelloController {
     private  Stage progressStage;
@@ -40,6 +39,8 @@ public class HelloController {
     private CheckBox duplexCheckBox;
     @FXML
     private CheckBox ADFCheckBox;
+    @FXML
+    private CheckBox searchablePDFCheckBox;
     @FXML
     private ComboBox resolutionComboBox;
     @FXML
@@ -183,27 +184,45 @@ public class HelloController {
 
     @FXML
     protected void onSaveButtonClicked() throws IOException {
+        OCRSpace.key = "";
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         File fileToSave = fileChooser.showSaveDialog(null);
         if (fileToSave != null) {
-            PDDocument document = new PDDocument();
-            int index = 0;
-            for (DocumentImage di: documentListView.getItems()) {
-                index = index + 1;
-                ImageView imageView = di.imageView;
-                PDRectangle rect = new PDRectangle((float) imageView.getImage().getWidth(),(float) imageView.getImage().getHeight());
-                System.out.println(rect);
-                PDPage page = new PDPage(rect);
-                document.addPage(page);
-                PDPageContentStream contentStream = new PDPageContentStream(document, page);
-                PDImageXObject image
-                        = PDImageXObject.createFromByteArray(document,di.image,String.valueOf(index));
-                contentStream.drawImage(image, 0, 0);
-                contentStream.close();
-            }
-            document.save(fileToSave.getAbsolutePath());
-            document.close();
+            progressStage.show();
+            Thread t = new Thread(() -> {
+                try {
+                    PDDocument document = new PDDocument();
+                    int index = 0;
+                    for (DocumentImage di: documentListView.getItems()) {
+                        index = index + 1;
+                        ImageView imageView = di.imageView;
+                        PDRectangle rect = new PDRectangle((float) imageView.getImage().getWidth(),(float) imageView.getImage().getHeight());
+                        System.out.println(rect);
+                        PDPage page = new PDPage(rect);
+                        document.addPage(page);
+                        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+                        PDImageXObject image
+                                = PDImageXObject.createFromByteArray(document,di.image,String.valueOf(index));
+                        contentStream.drawImage(image, 0, 0);
+                        if (searchablePDFCheckBox.isSelected()) {
+                            String base64 = Base64.getEncoder().encodeToString(di.image);
+                            OCRResult result = OCRSpace.detect(base64);
+                            SearchablePDFCreator.addTextOverlay(contentStream,result,image.getHeight());
+                        }
+                        contentStream.close();
+                    }
+                    document.save(fileToSave.getAbsolutePath());
+                    document.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                Platform.runLater(() -> {
+                    progressStage.close();
+                });
+            });
+            t.start();
+
         }
     }
 
