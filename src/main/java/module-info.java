@@ -6,7 +6,7 @@ module com.dynamsoft.documentscanner {
     requires com.fasterxml.jackson.databind;
     requires org.apache.pdfbox;
     requires okhttp3;
-
+    requires searchablePDF4j;
 
     opens com.dynamsoft.documentscanner to javafx.fxml;
     exports com.dynamsoft.documentscanner;

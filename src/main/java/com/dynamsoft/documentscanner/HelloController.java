@@ -1,5 +1,6 @@
 package com.dynamsoft.documentscanner;
 
+import com.tonyxlh.searchablePDF4j.SearchablePDFCreator;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
