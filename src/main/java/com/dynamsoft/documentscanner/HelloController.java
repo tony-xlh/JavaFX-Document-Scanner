@@ -87,13 +87,14 @@ public class HelloController {
                 @Override
                 protected void updateItem(DocumentImage item, boolean empty) {
                     super.updateItem(item, empty);
-
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        item.imageView.setFitWidth(documentListView.widthProperty().subtract(30).doubleValue());
-                        setGraphic(item.imageView);
-                    }
+                    Platform.runLater(() -> {
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            item.imageView.setFitWidth(documentListView.widthProperty().subtract(30).doubleValue());
+                            setGraphic(item.imageView);
+                        }
+                    });
                 }
             });
         } catch (Exception e) {
