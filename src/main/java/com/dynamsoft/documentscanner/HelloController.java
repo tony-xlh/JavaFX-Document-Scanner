@@ -167,6 +167,9 @@ public class HelloController {
                     }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
+                    Platform.runLater(() -> {
+                        showMessage(e.getMessage());
+                    });
                 }
                 Platform.runLater(() -> {
                     progressStage.close();
@@ -174,6 +177,13 @@ public class HelloController {
             });
             t.start();
         }
+    }
+
+    private void showMessage(String msg){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.show();
     }
 
     private void loadImage(byte[] image){
