@@ -28,7 +28,7 @@ public class DynamsoftService {
     public List<Scanner> getScanners() throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(endPoint+"/DWTAPI/Scanners")
+                .url(endPoint+"/api/device/scanners")
                 .build();
         try (Response response = client.newCall(request).execute()) {
             String body = response.body().string();
@@ -69,7 +69,7 @@ public class DynamsoftService {
                 .build();
         RequestBody requestBody = RequestBody.create(jsonBody, JSON);
         Request request = new Request.Builder()
-                .url(endPoint+"/DWTAPI/ScanJobs?timeout=120")
+                .url(endPoint+"/api/device/scanners/jobs?timeout=120")
                 .post(requestBody)
                 .build();
         try (Response response = client.newCall(request).execute()) {
@@ -90,7 +90,7 @@ public class DynamsoftService {
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .build();
         Request request = new Request.Builder()
-                .url(endPoint+"/DWTAPI/ScanJobs/"+jobID+"/NextDocument?timeout=120")
+                .url(endPoint+"/api/scanners/jobs/"+jobID+"/next-page?timeout=120")
                 .build();
         String body = "";
         try (Response response = client.newCall(request).execute()) {
@@ -99,7 +99,6 @@ public class DynamsoftService {
             }else{
                 return null;
             }
-
         }
     }
 }
