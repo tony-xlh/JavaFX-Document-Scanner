@@ -84,6 +84,24 @@ public class DynamsoftService {
         }
     }
 
+    public boolean deleteJob(String jobID) throws Exception {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = RequestBody.create(mediaType, "");
+        Request request = new Request.Builder()
+                .url(endPoint+"/api/device/scanners/jobs/"+jobID)
+                .method("DELETE", body)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.code() == 204) {
+                return true;
+            }else{
+                throw new Exception(response.body().string());
+            }
+        }
+    }
+
     public byte[] nextDocument(String jobID) throws Exception {
         return getImage(jobID);
     }

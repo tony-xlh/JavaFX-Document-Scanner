@@ -29,6 +29,8 @@ import java.util.*;
 public class HelloController {
     private  Stage progressStage;
     @FXML
+    private Button scanButton;
+    @FXML
     private ComboBox<String> scannersComboBox;
     @FXML
     private ListView<DocumentImage> documentListView;
@@ -50,7 +52,7 @@ public class HelloController {
     private ComboBox pixelTypeComboBox;
     private List<Scanner> scanners = new ArrayList<Scanner>();
     private DynamsoftService service = new DynamsoftService("http://127.0.0.1:18622","");
-
+    private String jobID = "";
     public void initialize(){
         try {
             this.createProgressStage();
@@ -139,6 +141,27 @@ public class HelloController {
 
     @FXML
     protected void onScanButtonClicked() {
+        if (scanButton.getText().equals("Scan")) {
+            scanButton.setText("Cancel");
+            startScanning();
+        }else{
+            stopScanning();
+            scanButton.setText("Scan");
+        }
+    }
+
+    private void stopScanning(){
+        try {
+            System.out.println("delete job: "+jobID);
+            service.deleteJob(jobID);
+            jobID = "";
+            progressStage.close();
+        } catch (Exception e) {
+            showMessage(e.getMessage());
+        }
+    }
+
+    private void startScanning(){
         int selectedIndex = scannersComboBox.getSelectionModel().getSelectedIndex();
         if (selectedIndex != -1) {
             service.license = licenseKeyTextField.getText();
@@ -158,10 +181,13 @@ public class HelloController {
                     pixelTypeSetup.capability = 257;
                     pixelTypeSetup.curValue = pixelTypeComboBox.getSelectionModel().getSelectedIndex();
                     caps.capabilities.add(pixelTypeSetup);
-                    String jobID = service.createScanJob(scanner,config,caps);
+                    jobID = service.createScanJob(scanner,config,caps);
                     System.out.println("ID: "+jobID);
                     byte[] image = service.nextDocument(jobID);
                     while (image != null){
+                        if (jobID.equals("")) { //canceled
+                            break;
+                        }
                         loadImage(image);
                         image = service.nextDocument(jobID);
                     }
@@ -172,6 +198,7 @@ public class HelloController {
                     });
                 }
                 Platform.runLater(() -> {
+                    scanButton.setText("Scan");
                     progressStage.close();
                 });
             });
