@@ -180,21 +180,25 @@ public class HelloController {
     }
 
     private void showMessage(String msg){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.show();
+        if (msg.equals("") == false) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText(msg);
+            alert.show();
+        }
     }
 
     private void loadImage(byte[] image){
-        System.out.println("image: "+image.length);
-        System.out.println(image.length);
-        Image img = new Image(new ByteArrayInputStream(image));
-        ImageView iv = new ImageView();
-        iv.setPreserveRatio(true);
-        iv.setImage(img);
-        DocumentImage di = new DocumentImage(iv,image);
-        documentListView.getItems().add(di);
+        Platform.runLater(() -> {
+            System.out.println("image: "+image.length);
+            System.out.println(image.length);
+            Image img = new Image(new ByteArrayInputStream(image));
+            ImageView iv = new ImageView();
+            iv.setPreserveRatio(true);
+            iv.setImage(img);
+            DocumentImage di = new DocumentImage(iv,image);
+            documentListView.getItems().add(di);
+        });
     }
 
     @FXML
