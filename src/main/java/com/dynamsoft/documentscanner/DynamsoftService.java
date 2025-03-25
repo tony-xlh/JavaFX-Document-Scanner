@@ -68,7 +68,7 @@ public class DynamsoftService {
                 .build();
         RequestBody requestBody = RequestBody.create(jsonBody, JSON);
         Request request = new Request.Builder()
-                .url(endPoint+"/api/device/scanners/jobs?timeout=120")
+                .url(endPoint+"/api/device/scanners/jobs")
                 .addHeader("X-DICS-LICENSE-KEY", this.license)
                 .post(requestBody)
                 .build();
@@ -89,12 +89,12 @@ public class DynamsoftService {
     }
 
     private byte[] getImage(String jobID) throws Exception {
-        System.out.println(endPoint+"/api/scanners/jobs/"+jobID+"/next-page?timeout=120");
+        System.out.println(endPoint+"/api/scanners/jobs/"+jobID+"/next-page");
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .build();
         Request request = new Request.Builder()
-                .url(endPoint+"/api/device/scanners/jobs/"+jobID+"/next-page?timeout=120")
+                .url(endPoint+"/api/device/scanners/jobs/"+jobID+"/next-page")
                 .build();
         try (Response response = client.newCall(request).execute()) {
             if (response.code() == 200) {
