@@ -53,7 +53,6 @@ public class DynamsoftService {
 
     public String createScanJob(Scanner scanner,DeviceConfiguration config,Capabilities capabilities) throws Exception {
         Map<String,Object> body = new HashMap<String,Object>();
-        body.put("license",this.license);
         body.put("device",scanner.device);
         if (config != null) {
             body.put("config",config);
@@ -70,11 +69,15 @@ public class DynamsoftService {
         RequestBody requestBody = RequestBody.create(jsonBody, JSON);
         Request request = new Request.Builder()
                 .url(endPoint+"/api/device/scanners/jobs?timeout=120")
+                .addHeader("X-DICS-LICENSE-KEY", this.license)
                 .post(requestBody)
                 .build();
         try (Response response = client.newCall(request).execute()) {
             if (response.code() == 201) {
-                return response.body().string();
+                String responseBody = response.body().string();
+                ObjectMapper resultMapper = new ObjectMapper();
+                Map<String,Object> parsed = resultMapper.readValue(responseBody,new TypeReference<Map<String,Object>>() {});
+                return (String) parsed.get("jobuid");
             }else{
                 throw new Exception(response.body().string());
             }
@@ -86,18 +89,18 @@ public class DynamsoftService {
     }
 
     private byte[] getImage(String jobID) throws Exception {
+        System.out.println(endPoint+"/api/scanners/jobs/"+jobID+"/next-page?timeout=120");
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .build();
         Request request = new Request.Builder()
-                .url(endPoint+"/api/scanners/jobs/"+jobID+"/next-page?timeout=120")
+                .url(endPoint+"/api/device/scanners/jobs/"+jobID+"/next-page?timeout=120")
                 .build();
-        String body = "";
         try (Response response = client.newCall(request).execute()) {
             if (response.code() == 200) {
                 return response.body().bytes();
             }else{
-                return null;
+                throw new Exception(response.body().string());
             }
         }
     }
