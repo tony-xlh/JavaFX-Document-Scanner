@@ -51,7 +51,7 @@ public class HelloController {
     @FXML
     private ComboBox pixelTypeComboBox;
     private List<Scanner> scanners = new ArrayList<Scanner>();
-    private DynamsoftWebTWAINService service = new DynamsoftWebTWAINService("http://127.0.0.1:18622","");
+    private DynamicWebTWAINService service = new DynamicWebTWAINService("http://127.0.0.1:18622","");
     private String jobID = "";
     public void initialize(){
         try {
