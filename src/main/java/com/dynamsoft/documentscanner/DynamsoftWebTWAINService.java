@@ -107,7 +107,6 @@ public class DynamsoftWebTWAINService {
     }
 
     private byte[] getImage(String jobID) throws Exception {
-        System.out.println(endPoint+"/api/scanners/jobs/"+jobID+"/next-page");
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .build();
