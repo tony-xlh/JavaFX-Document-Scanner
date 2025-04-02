@@ -12,15 +12,15 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.*;
 
-public class DynamsoftService {
+public class DynamsoftWebTWAINService {
     public String endPoint = "http://127.0.0.1:18622";
     public String license = "";
     private static final MediaType JSON
             = MediaType.get("application/json; charset=utf-8");
-    public DynamsoftService(){
+    public DynamsoftWebTWAINService(){
 
     }
-    public DynamsoftService(String endPoint, String license){
+    public DynamsoftWebTWAINService(String endPoint, String license){
         this.endPoint = endPoint;
         this.license = license;
     }
