@@ -199,6 +199,7 @@ public class HelloController {
                 }
                 Platform.runLater(() -> {
                     scanButton.setText("Scan");
+                    HelloApplication.primaryStage.requestFocus();
                     progressStage.close();
                 });
             });

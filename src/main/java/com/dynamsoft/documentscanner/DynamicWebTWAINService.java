@@ -69,7 +69,7 @@ public class DynamicWebTWAINService {
         RequestBody requestBody = RequestBody.create(jsonBody, JSON);
         Request request = new Request.Builder()
                 .url(endPoint+"/api/device/scanners/jobs")
-                .addHeader("X-DICS-LICENSE-KEY", this.license)
+                .addHeader("DWT-PRODUCT-KEY", this.license)
                 .post(requestBody)
                 .build();
         try (Response response = client.newCall(request).execute()) {
